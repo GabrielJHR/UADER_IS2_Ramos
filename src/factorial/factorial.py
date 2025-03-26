@@ -23,16 +23,23 @@ def factorial(num):
 # Función para procesar el rango
 def procesar_rango(rango):
     try:
-        desde, hasta = map(int, rango.split('-'))
+        if rango.startswith('-'):
+            hasta = int(rango[1:])
+            desde = 1
+        elif rango.endswith('-'):
+            desde = int(rango[:-1])
+            hasta = 60
+        else:
+            desde, hasta = map(int, rango.split('-'))
         return desde, hasta
     except ValueError:
-        print("Formato de rango inválido. Debe ser 'desde-hasta' (ej. 4-8).")
+        print("Formato de rango inválido. Debe ser '-hasta', 'desde-' o 'desde-hasta' (ej. 4-8).")
         sys.exit()
 
 # Verificamos si se ha pasado un argumento
 if len(sys.argv) <= 1:
     # Si no se ha pasado un argumento, solicitamos al usuario que ingrese el rango
-    rango = input("Debe informar un rango (desde-hasta): ")
+    rango = input("Debe informar un rango ('-hasta', 'desde-' o 'desde-hasta'): ")
 else:
     rango = sys.argv[1]
 
