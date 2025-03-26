@@ -6,13 +6,13 @@
 #* Creative commons                                                        *
 #*-------------------------------------------------------------------------*
 import sys
+
 def factorial(num): 
     if num < 0: 
-        print("Factorial de un número negativo no existe")
+        print("El factorial de un número negativo no existe")
         return 0
     elif num == 0: 
         return 1
-        
     else: 
         fact = 1
         while(num > 1): 
@@ -20,9 +20,13 @@ def factorial(num):
             num -= 1
         return fact 
 
-if len(sys.argv) == 0:
-   print("Debe informar un número!")
-   sys.exit()
-num=int(sys.argv[1])
-print("Factorial ",num,"! es ", factorial(num)) 
+# Verificamos si se ha pasado un argumento
+if len(sys.argv) <= 1:
+    # Si no se ha pasado un argumento, solicitamos al usuario que ingrese un número
+    num = int(input("Debe informar un número: "))
+else:
+    num = int(sys.argv[1])
+
+# Imprimimos el resultado del factorial
+print("El factorial de", num, "es", factorial(num))
 
