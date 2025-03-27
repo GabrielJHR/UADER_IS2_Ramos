@@ -1,32 +1,24 @@
 #!/usr/bin/python
 #*-------------------------------------------------------------------------*
-#* factorial_OOP.py                                                       *
-#* calcula el factorial de un rango de números utilizando OOP              *
+#* factorial.py                                                            *
+#* calcula el factorial de un rango de números                             *
 #* Dr.P.E.Colla (c) 2022                                                   *
 #* Creative commons                                                        *
 #*-------------------------------------------------------------------------*
 import sys
 
-class Factorial:
-    def __init__(self):
-        pass
-
-    def factorial(self, num): 
-        if num < 0: 
-            print("El factorial de un número negativo no existe")
-            return 0
-        elif num == 0: 
-            return 1
-        else: 
-            fact = 1
-            while(num > 1): 
-                fact *= num 
-                num -= 1
-            return fact 
-
-    def run(self, min, max):
-        for num in range(min, max + 1):
-            print("El factorial de", num, "es", self.factorial(num))
+def factorial(num): 
+    if num < 0: 
+        print("El factorial de un número negativo no existe")
+        return 0
+    elif num == 0: 
+        return 1
+    else: 
+        fact = 1
+        while(num > 1): 
+            fact *= num 
+            num -= 1
+        return fact 
 
 # Función para procesar el rango
 def procesar_rango(rango):
@@ -54,6 +46,6 @@ else:
 # Procesamos el rango
 desde, hasta = procesar_rango(rango)
 
-# Creamos una instancia de la clase Factorial y ejecutamos el cálculo
-factorial_calculador = Factorial()
-factorial_calculador.run(desde, hasta)
+# Calculamos e imprimimos los factoriales para cada número en el rango
+for num in range(desde, hasta + 1):
+    print("El factorial de", num, "es", factorial(num))
