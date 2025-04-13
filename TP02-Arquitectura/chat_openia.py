@@ -1,6 +1,13 @@
+# -*- coding: utf-8 -*-
+# Este script permite interactuar con la API de OpenAI para realizar consultas a ChatGPT.
+# Se utiliza la biblioteca OpenAI para realizar las solicitudes a la API y pyreadline3 para manejar el historial de comandos en la terminal.   
+# Se requiere tener instalada la biblioteca OpenAI y pyreadline3 para su correcto funcionamiento.
+
 from openai import OpenAI
 import pyreadline3
 
+# Importar la biblioteca OpenAI y pyreadline3 para el manejo de la entrada del usuario
+# y el historial de comandos en la terminal.
 client = OpenAI()
 
 # Configuración de la API de OpenAI
@@ -16,6 +23,8 @@ rl = pyreadline3.Readline()
 def add_to_history(command):
     rl.add_history(command)
 
+# Función para manejar la conversación con ChatGPT
+# y enviar la consulta del usuario a la API
 def chat_with_gpt(user_query):
     try:
         # Agregar la consulta del usuario al contexto
@@ -35,6 +44,7 @@ def chat_with_gpt(user_query):
         # Agregar la respuesta de ChatGPT al contexto
         context.append({"role": "assistant", "content": response.choices[0].message.content})
 
+        # Devolver la respuesta de ChatGPT
         return response.choices[0].message.content
     except Exception as e:
         return f"Error: {e}"
@@ -43,6 +53,8 @@ def main():
     try:
         # Leer la entrada del usuario con soporte para historial de comandos
         user_query = input("You: ")
+
+        # Si el usuario no ingresa nada, salir del programa
         if user_query != "":
             add_to_history(user_query)
             response = chat_with_gpt(user_query)
