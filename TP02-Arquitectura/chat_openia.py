@@ -41,7 +41,7 @@ def chat_with_gpt(user_query):
 
         # Realizar la solicitud a la API de ChatGPT
         response = client.chat.completions.create(
-            model="gpt-4o-mini-2024-07-18",
+            model="gpt-4.1-mini-2025-04-14",
             messages=context,
             temperature=1,
             max_tokens=16384,
