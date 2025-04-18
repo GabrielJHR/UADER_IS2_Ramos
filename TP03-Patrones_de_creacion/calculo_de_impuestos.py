@@ -1,40 +1,71 @@
-"""
-Este módulo proporciona una clase para calcular diferentes tipos de impuestos
-sobre una base imponible.
-"""
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from typing import Any
 
-class CalculoImpuestos:
+class Builder(ABC):
     """
-    Clase para calcular impuestos como IVA, IIBB y contribuciones municipales.
+    Interfaz Builder para crear partes del producto (impuestos).
     """
-    def __init__(self, base_imponible):
-        """
-        Inicializa la clase con la base imponible.
-        """
+
+    @property
+    @abstractmethod
+    def product(self) -> None:
+        pass
+
+    @abstractmethod
+    def calcular_iva(self) -> None:
+        pass
+
+    @abstractmethod
+    def calcular_iibb(self) -> None:
+        pass
+
+    @abstractmethod
+    def calcular_contribuciones(self) -> None:
+        pass
+
+class CalculoImpuestosBuilder(Builder):
+    """
+    Builder concreto para calcular impuestos.
+    """
+
+    def __init__(self, base_imponible: float) -> None:
         self.base_imponible = base_imponible
+        self.reset()
 
-    def calcular_iva(self):
-        """
-        Calcula el IVA sobre la base imponible.
-        """
-        return self.base_imponible * 0.21
+    def reset(self) -> None:
+        self._product = CalculoImpuestosProduct(self.base_imponible)
 
-    def calcular_iibb(self):
-        """
-        Calcula el impuesto sobre los ingresos brutos (IIBB).
-        """
-        return self.base_imponible * 0.05
+    @property
+    def product(self) -> 'CalculoImpuestosProduct':
+        product = self._product
+        self.reset()
+        return product
 
-    def calcular_contribuciones_municipales(self):
-        """
-        Calcula las contribuciones municipales sobre la base imponible.
-        """
-        return self.base_imponible * 0.012
+    def calcular_iva(self) -> None:
+        self._product.add_impuesto('IVA', self.base_imponible * 0.21)
 
-    def calcular_total_impuestos(self):
-        """
-        Calcula el total de todos los impuestos.
-        """
-        return (self.calcular_iva() +
-                self.calcular_iibb() +
-                self.calcular_contribuciones_municipales())
+    def calcular_iibb(self) -> None:
+        self._product.add_impuesto('IIBB', self.base_imponible * 0.05)
+
+    def calcular_contribuciones(self) -> None:
+        self._product.add_impuesto('Contribuciones Municipales', self.base_imponible * 0.012)
+
+class CalculoImpuestosProduct:
+    """
+    Producto final: contiene los impuestos calculados.
+    """
+
+    def __init__(self, base_imponible: float) -> None:
+        self.base_imponible = base_imponible
+        self.impuestos = {}
+
+    def add_impuesto(self, nombre: str, valor: float) -> None:
+        self.impuestos[nombre] = valor
+
+    def total_impuestos(self) -> float:
+        return sum(self.impuestos.values())
+
+    def listar_impuestos(self) -> None:
+        for nombre, valor in self.impuestos.items():
+            print(f"{nombre}: {valor:.2f}")
