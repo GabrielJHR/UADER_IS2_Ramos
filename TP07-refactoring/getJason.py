@@ -2,16 +2,26 @@ import json
 import sys
 
 # Control de branch para evitar conflictos con el código antiguo
-NUEVO_CODIGO = True
+NUEVO_CODIGO = False
 
 class LectorJSON:
     """
-    Clase para leer un archivo JSON y obtener el valor de una clave específica.
+    Clase Singleton para leer un archivo JSON y obtener el valor de una clave específica.
     """
+    _instance = None
+
+    def __new__(cls, jsonfile, jsonkey='token1'):
+        if cls._instance is None:
+            cls._instance = super(LectorJSON, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
 
     def __init__(self, jsonfile, jsonkey='token1'):
+        if self._initialized:
+            return
         self.jsonfile = jsonfile
         self.jsonkey = jsonkey
+        self._initialized = True
 
     def get_token(self):
         """
