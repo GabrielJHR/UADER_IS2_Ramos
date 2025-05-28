@@ -2,7 +2,7 @@ import json
 import sys
 
 # Control de branch para evitar conflictos con el código antiguo
-NUEVO_CODIGO = False
+NUEVO_CODIGO = True
 
 class LectorJSON:
     """
@@ -10,40 +10,30 @@ class LectorJSON:
     """
     _instance = None
 
-    def __new__(cls, jsonfile, jsonkey='token1'):
+    def __new__(cls):
         if cls._instance is None:
             cls._instance = super(LectorJSON, cls).__new__(cls)
-            cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, jsonfile, jsonkey='token1'):
-        if self._initialized:
-            return
-        self.jsonfile = jsonfile
-        self.jsonkey = jsonkey
-        self._initialized = True
-
-    def get_token(self):
+    def get_token(self, jsonfile, jsonkey='token1'):
         """
         Lee el archivo JSON y devuelve el valor asociado a la clave especificada.
         """
-        with open(self.jsonfile, 'r') as myfile:
+        with open(jsonfile, 'r') as myfile:
             data = myfile.read()
         obj = json.loads(data)
-        return str(obj[self.jsonkey])
-    
+        return str(obj[jsonkey])
+
 if NUEVO_CODIGO:
     # Si se está ejecutando el nuevo código, se crea una instancia de LectorJSON
-    if len(sys.argv) == 3:
-        lector = LectorJSON(sys.argv[1], sys.argv[2])
-    else:
-        lector = LectorJSON(sys.argv[1])
-    
     print("Nuevo código en ejecución")
-    print(lector.get_token())
+    if len(sys.argv) == 3:
+        lector = LectorJSON()
+        print(lector.get_token(sys.argv[1], sys.argv[2]))
+    else:
+        lector = LectorJSON()
+        print(lector.get_token(sys.argv[1]))
     sys.exit(0)
-    
-
 
 """-------------------------------------------------- Programa original ----------------------------------------------------"""
 
