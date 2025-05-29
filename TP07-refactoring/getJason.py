@@ -22,6 +22,8 @@ import os    # Importa el módulo para operaciones del sistema operativo
 # Control de branch para evitar conflictos con el código antiguo
 NUEVO_CODIGO = True  # Si es True, se ejecuta el código refactorizado
 
+VERSION = "1.1"  # Versión del programa
+
 class LectorJSON:
     """
     Clase Singleton para leer un archivo JSON y obtener el valor de una clave específica.
@@ -61,6 +63,12 @@ class LectorJSON:
 if NUEVO_CODIGO:
     # Si se está ejecutando el nuevo código, se crea una instancia de LectorJSON
     print("Nuevo código en ejecución")
+
+    # Si el argumento es "-v", mostrar la versión y salir
+    if len(sys.argv) == 2 and sys.argv[1] == "-v":
+        print(f"getJason.py versión {VERSION}")
+        sys.exit(0)
+
     # Verifica la cantidad de argumentos recibidos
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print("Error: Número incorrecto de argumentos.")
