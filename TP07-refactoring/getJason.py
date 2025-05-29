@@ -36,7 +36,7 @@ class LectorJSON:
             cls._instance = super(LectorJSON, cls).__new__(cls)
         return cls._instance
 
-    def get_token(self, jsonfile, jsonkey='token1'):
+    def get_token(self, jsonfile, JSON_KEY='token1'):
         """
         Lee el archivo JSON y devuelve el valor asociado a la clave especificada.
         Maneja errores de archivo inexistente, formato inválido y clave no encontrada.
@@ -45,7 +45,7 @@ class LectorJSON:
             print(f"Error: El archivo '{jsonfile}' no existe.")
             return None
         try:
-            with open(jsonfile, 'r') as myfile:
+            with open(jsonfile, 'r', encoding="utf-8") as myfile:
                 data = myfile.read()  # Lee el contenido del archivo
             obj = json.loads(data)   # Parsea el contenido como JSON
         except json.JSONDecodeError:
@@ -55,10 +55,10 @@ class LectorJSON:
             print(f"Error al leer el archivo: {e}")
             return None
 
-        if jsonkey not in obj:
-            print(f"Error: La clave '{jsonkey}' no existe en el archivo JSON.")
+        if JSON_KEY not in obj:
+            print(f"Error: La clave '{JSON_KEY}' no existe en el archivo JSON.")
             return None
-        return str(obj[jsonkey])  # Devuelve el valor de la clave como string
+        return str(obj[JSON_KEY])  # Devuelve el valor de la clave como string
 
 if NUEVO_CODIGO:
     # Si se está ejecutando el nuevo código, se crea una instancia de LectorJSON
@@ -82,27 +82,28 @@ if NUEVO_CODIGO:
         print("Error: El archivo debe tener extensión .json")
         sys.exit(1)
 
-    jsonkey = sys.argv[2] if len(sys.argv) == 3 else "token1"  # Segundo argumento opcional: clave
+    JSON_KEY = sys.argv[2] if len(sys.argv) == 3 else "token1"  # Segundo argumento opcional: clave
 
     # Validación adicional: la clave no debe estar vacía
-    if not jsonkey or not isinstance(jsonkey, str):
+    if not JSON_KEY or not isinstance(JSON_KEY, str):
         print("Error: La clave debe ser un string no vacío.")
         sys.exit(1)
 
     lector = LectorJSON()  # Crea una instancia de LectorJSON
-    token = lector.get_token(jsonfile, jsonkey)  # Obtiene el valor de la clave
+    token = lector.get_token(jsonfile, JSON_KEY)  # Obtiene el valor de la clave
     if token is not None:
         print(token)  # Imprime el valor si no hubo errores
     else:
         sys.exit(1)  # Si hubo error, termina con código de error
     sys.exit(0)
 
-"""-------------------------------------------------- Programa original ----------------------------------------------------"""
+"""----------- Programa original ------------"""
 
 """
 Recuperacion del codigo fuente de getJason.pyc
 
-Este script lee un archivo JSON y muestra en pantalla el valor asociado a una clave específica (por defecto 'token1').
+Este script lee un archivo JSON y muestra en pantalla el valor asociado a una clave específica 
+(por defecto 'token1').
 Se puede especificar la clave como segundo argumento al ejecutar el script.
 Uso:
     python getJason.py archivo.json [clave]
@@ -114,14 +115,14 @@ jsonfile = sys.argv[1]
 
 # Modificacion para que tome dos argumentos y se pueda cambiar el token
 if len(sys.argv) == 3:
-    jsonkey = sys.argv[2]
+    JSON_KEY = sys.argv[2]
 else:
-    jsonkey = "token1"
+    JSON_KEY = "token1"
 
 # Codigo antiguo
-# jsonkey = "token1"
+# JSON_KEY = "token1"
 
 with open(jsonfile, 'r') as myfile:
     data = myfile.read()
 obj = json.loads(data)
-print(str(obj[jsonkey]))
+print(str(obj[JSON_KEY]))
