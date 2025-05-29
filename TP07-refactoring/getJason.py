@@ -63,17 +63,30 @@ if NUEVO_CODIGO:
     print("Nuevo código en ejecución")
     # Verifica la cantidad de argumentos recibidos
     if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Error: Número incorrecto de argumentos.")
         print("Uso: python getJason.py archivo.json [clave]")
-        sys.exit(0)
+        sys.exit(1)  # Termina con código de error
 
     jsonfile = sys.argv[1]  # Primer argumento: nombre del archivo JSON
+
+    # Validación adicional: el archivo debe tener extensión .json
+    if not jsonfile.lower().endswith('.json'):
+        print("Error: El archivo debe tener extensión .json")
+        sys.exit(1)
+
     jsonkey = sys.argv[2] if len(sys.argv) == 3 else "token1"  # Segundo argumento opcional: clave
+
+    # Validación adicional: la clave no debe estar vacía
+    if not jsonkey or not isinstance(jsonkey, str):
+        print("Error: La clave debe ser un string no vacío.")
+        sys.exit(1)
 
     lector = LectorJSON()  # Crea una instancia de LectorJSON
     token = lector.get_token(jsonfile, jsonkey)  # Obtiene el valor de la clave
     if token is not None:
         print(token)  # Imprime el valor si no hubo errores
-        # Si hubo error, ya se mostró el mensaje y termina normalmente
+    else:
+        sys.exit(1)  # Si hubo error, termina con código de error
     sys.exit(0)
 
 """-------------------------------------------------- Programa original ----------------------------------------------------"""
