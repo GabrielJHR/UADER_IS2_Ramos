@@ -3,92 +3,71 @@
 # Copyright UADERFCyT-IS2©2024 todos los derechos reservados.
 #
 # Descripción:
-#   Este script permite leer un archivo JSON y mostrar en pantalla el valor asociado a una clave
-#   específica (por defecto 'token1'). Se puede especificar la clave como segundo argumento al
-#   ejecutar el script.
-#
-# Uso:
-#   python getJason.py archivo.json [clave]
-#
-# Notas:
-#   - Incluye una versión refactorizada con control de errores y una clase Singleton.
-#   - Si NUEVO_CODIGO es True, se ejecuta la versión mejorada.
+#   Automatiza pagos entre cuentas bancarias usando información de sitedata.json.
 # -------------------------------------------------------------------------------------------------
 
-import json  # Importa el módulo para trabajar con archivos JSON
-import sys   # Importa el módulo para acceder a argumentos de línea de comandos
-import os    # Importa el módulo para operaciones del sistema operativo
+import sys
+from pagos import GestorPagos
+from lector_json import LectorJSON
+from pagos import CuentaBancaria
 
-VERSION = "1.1"  # Versión del programa
+VERSION = "1.2"
 
-class LectorJSON:
-    """
-    Clase Singleton para leer un archivo JSON y obtener el valor de una clave específica.
-    """
-    _instance = None  # Variable de clase para almacenar la instancia única
-
-    def __new__(cls):
-        # Implementación del patrón Singleton
-        if cls._instance is None:
-            cls._instance = super(LectorJSON, cls).__new__(cls)
-        return cls._instance
-
-    def get_token(self, jsonfile, JSON_KEY='token1'):
-        """
-        Lee el archivo JSON y devuelve el valor asociado a la clave especificada.
-        Maneja errores de archivo inexistente, formato inválido y clave no encontrada.
-        """
-        if not os.path.isfile(jsonfile):
-            print(f"Error: El archivo '{jsonfile}' no existe.")
-            return None
-        try:
-            with open(jsonfile, 'r', encoding="utf-8") as myfile:
-                data = myfile.read()  # Lee el contenido del archivo
-            obj = json.loads(data)   # Parsea el contenido como JSON
-        except json.JSONDecodeError:
-            print(f"Error: El archivo '{jsonfile}' no es un JSON válido.")
-            return None
-        except Exception as e:
-            print(f"Error al leer el archivo: {e}")
-            return None
-
-        if JSON_KEY not in obj:
-            print(f"Error: La clave '{JSON_KEY}' no existe en el archivo JSON.")
-            return None
-        return str(obj[JSON_KEY])  # Devuelve el valor de la clave como string
+def crear_cuentas_desde_json(jsonfile, claves):
+    lector = LectorJSON()
+    cuentas = []
+    saldos = {"token1": 1000, "token2": 2000}
+    for clave in claves:
+        valor_token = lector.get_token(jsonfile, clave)
+        if valor_token is not None:
+            cuentas.append(CuentaBancaria(valor_token, saldos.get(clave, 0)))
+    return cuentas
 
 def main():
-    # Si el argumento es "-v", mostrar la versión y salir
+    """
+    Función principal que ejecuta el script.
+    Si se pasa el argumento "-v", muestra la versión del script y termina.
+    Si no, crea cuentas bancarias desde el archivo JSON y realiza pagos.
+    Luego lista los pagos realizados.
+    """
+    print("="*50)
+    print(" Automatización de Pagos Bancarios ".center(50, "="))
+    print("="*50)
+
     if len(sys.argv) == 2 and sys.argv[1] == "-v":
         print(f"getJason.py versión {VERSION}")
         sys.exit(0)
 
-    # Verifica la cantidad de argumentos recibidos
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Error: Número incorrecto de argumentos.")
-        print("Uso: python getJason.py archivo.json [clave]")
-        sys.exit(1)  # Termina con código de error
-
-    jsonfile = sys.argv[1]  # Primer argumento: nombre del archivo JSON
-
-    # Validación adicional: el archivo debe tener extensión .json
-    if not jsonfile.lower().endswith('.json'):
-        print("Error: El archivo debe tener extensión .json")
+    print("Creando cuentas bancarias desde 'sitedata.json'...")
+    claves = ["token1", "token2"]
+    cuentas = crear_cuentas_desde_json("sitedata.json", claves)
+    if not cuentas:
+        print("No se pudieron crear cuentas. Verifique el archivo JSON.")
         sys.exit(1)
 
-    JSON_KEY = sys.argv[2] if len(sys.argv) == 3 else "token1"  # Segundo argumento opcional: clave
+    gestor = GestorPagos(cuentas)
+    print("Procesando pagos automáticos...\n")
+    for pedido in range(1, 11):
+        exito = gestor.realizar_pago(pedido, 500)
+        if not exito:
+            print(f"Pedido {pedido}: No se pudo realizar el pago por saldo insuficiente en todas las cuentas.")
 
-    # Validación adicional: la clave no debe estar vacía
-    if not JSON_KEY or not isinstance(JSON_KEY, str):
-        print("Error: La clave debe ser un string no vacío.")
-        sys.exit(1)
+    print("\n" + "-"*50)
+    print("Listado de pagos realizados:")
+    print("-"*50)
+    gestor.listar_pagos()
+    print("="*50)
+    print(" Fin de la ejecución ".center(50, "="))
+    print("="*50)
 
-    lector = LectorJSON()  # Crea una instancia de LectorJSON
-    token = lector.get_token(jsonfile, JSON_KEY)  # Obtiene el valor de la clave
-    if token is not None:
-        print(token)  # Imprime el valor si no hubo errores
-    else:
-        sys.exit(1)  # Si hubo error, termina con código de error
-    
 if __name__ == "__main__":
-    main()  # Llama a la función principal al ejecutar el script
+    main()
+
+    def listar_pagos(self):
+        if not self.historial.pagos:
+            print("No se han realizado pagos.")
+            return
+        print(f"{'Pedido':<10}{'Token':<10}{'Monto':<10}")
+        print("-"*30)
+        for pago in self.historial:
+            print(f"{pago.numero_pedido:<10}{pago.token:<10}${pago.monto:<10}")
