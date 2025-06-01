@@ -7,13 +7,15 @@
 # -------------------------------------------------------------------------------------------------
 
 import sys
-from pagos import GestorPagos
+from pagos import GestorPagos, CuentaBancaria
 from lector_json import LectorJSON
-from pagos import CuentaBancaria
 
 VERSION = "1.2"
 
 def crear_cuentas_desde_json(jsonfile, claves):
+    """
+    Crea una lista de cuentas bancarias a partir de un archivo JSON y claves específicas.
+    """
     lector = LectorJSON()
     cuentas = []
     saldos = {"token1": 1000, "token2": 2000}
@@ -61,6 +63,10 @@ def main():
     print("="*50)
 
 if __name__ == "__main__":
+    """
+    Punto de entrada del script.
+    Si se ejecuta directamente, llama a la función main().
+    """
     main()
 
     def listar_pagos(self):

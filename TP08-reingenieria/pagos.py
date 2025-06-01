@@ -1,4 +1,7 @@
+"""Módulo para la gestión de pagos automáticos entre cuentas bancarias."""
+
 class Pago:
+    """Clase que representa un pago realizado."""
     def __init__(self, numero_pedido, token, monto):
         """
         Inicializa un objeto Pago con el número de pedido, token de la cuenta y monto del pago.
@@ -36,8 +39,8 @@ class HistorialDePagos:
         """
         if isinstance(pago, Pago):
             self.pagos.append(pago)
-        else:
-            raise ValueError("El pago debe ser un objeto de tipo Pago.")
+            return
+        raise ValueError("El pago debe ser un objeto de tipo Pago.")
 
     def __iter__(self):
         self.indice = 0
@@ -53,8 +56,7 @@ class HistorialDePagos:
             pago = self.pagos[self.indice]
             self.indice += 1
             return pago
-        else:
-            raise StopIteration
+        raise StopIteration
 
 class CuentaBancaria:
     """
@@ -79,13 +81,13 @@ class CuentaBancaria:
         """
         Realiza un pago si hay suficiente saldo en la cuenta.
         :param monto: Monto del pago a realizar.
-        :return: True si el pago se realizó con éxito, False si no hay suficiente saldo."""
+        :return: True si el pago se realizó con éxito, False si no hay suficiente saldo.
+        """
         if self.puede_pagar(monto):
             self.saldo -= monto
             return True
-        else:
-            print("Error: Saldo insuficiente.")
-            return False
+        print("Error: Saldo insuficiente.")
+        return False
 
     def get_token(self):
         """
@@ -105,7 +107,7 @@ class GestorPagos:
     """
     Clase para gestionar los pagos automáticos utilizando múltiples cuentas bancarias.
     Permite realizar pagos en un orden cíclico entre las cuentas y mantener un historial de pagos.
-    :param cuentas: Lista de objetos CuentaBancaria que representan las cuentas disponibles para realizar pagos.
+    :param cuentas: Lista de CuentaBancaria para realizar pagos.
     :param historial: Objeto HistorialDePagos que almacena los pagos realizados.
     :param turno: Índice de la cuenta que se utilizará para el próximo pago.
     """
@@ -115,6 +117,12 @@ class GestorPagos:
         self.turno = 0
 
     def realizar_pago(self, numero_pedido, monto):
+        """
+        Realiza un pago automático usando las cuentas disponibles en orden cíclico.
+        :param numero_pedido: Número del pedido asociado al pago.
+        :param monto: Monto del pago a realizar.
+        :return: True si el pago se realizó, False si no hay saldo suficiente en ninguna cuenta.
+        """
         cuentas_len = len(self.cuentas)
         intentos = 0
         idx = self.turno
@@ -124,12 +132,18 @@ class GestorPagos:
                 cuenta.realizar_pago(monto)
                 pago = Pago(numero_pedido, cuenta.get_token(), monto)
                 self.historial.agregar_pago(pago)
-                print(f"Pago realizado: Pedido {numero_pedido}, Token {cuenta.get_token()}, Monto ${monto}")
+                print(
+                    f"Pago realizado: Pedido {numero_pedido}, Token {cuenta.get_token()}, "
+                    f"Monto ${monto}"
+                )
                 self.turno = (idx + 1) % cuentas_len
                 return True
             idx = (idx + 1) % cuentas_len
             intentos += 1
-        print(f"No se pudo realizar el pago del pedido {numero_pedido}: saldo insuficiente en todas las cuentas.")
+        print(
+            f"No se pudo realizar el pago del pedido {numero_pedido}: "
+            "saldo insuficiente en todas las cuentas."
+        )
         return False
 
     def listar_pagos(self):

@@ -1,3 +1,6 @@
+"""LectorJSON: Clase Singleton para leer un archivo JSON y obtener el 
+valor de una clave específica."""
+
 import json
 import os
 
@@ -8,11 +11,17 @@ class LectorJSON:
     _instance = None
 
     def __new__(cls):
+        """
+        Método para asegurar que solo se crea una instancia de LectorJSON (Singleton).
+        """
         if cls._instance is None:
             cls._instance = super(LectorJSON, cls).__new__(cls)
         return cls._instance
 
-    def get_token(self, jsonfile, JSON_KEY='token1'):
+    def get_token(self, jsonfile, json_key='token1'):
+        """
+        Obtiene el valor de una clave específica de un archivo JSON.
+        """
         if not os.path.isfile(jsonfile):
             print(f"Error: El archivo '{jsonfile}' no existe.")
             return None
@@ -27,7 +36,7 @@ class LectorJSON:
             print(f"Error al leer el archivo: {e}")
             return None
 
-        if JSON_KEY not in obj:
-            print(f"Error: La clave '{JSON_KEY}' no existe en el archivo JSON.")
+        if json_key not in obj:
+            print(f"Error: La clave '{json_key}' no existe en el archivo JSON.")
             return None
-        return str(obj[JSON_KEY])
+        return str(obj[json_key])
